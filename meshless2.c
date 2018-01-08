@@ -15,9 +15,9 @@ Test meshless membrane model
 #define Dt 0.001 // time step
 #define sigma 1.0 // excluded volume diameter
 
-#define L (20.0*sigma) // box size
+#define L (10.0*sigma) // box size
 #define L4 (L*L/4.0)
-#define N 300 // number of particles
+#define N 100 // number of particles
 
 //constants for updating velocities
 #define xi 1.0
@@ -59,6 +59,25 @@ void createConfiguration(double (*pos)[3], double (*vel)[3]){
 		vel[i][2]=0.01;
 		printf("placed particle %d \n", i);
     }	
+}
+
+void createFixedConfiguration(double (*pos)[3], double (*vel)[3]){
+	/*place particles on a plane - considering excluded volume*/
+	srand ( time(NULL) );
+	int i, j, k;
+	int n_row = int(sqrt(N));
+	for (i=0; i< n_row; i++){
+		for (j=0; j< n_row; j++){
+			pos[i*n_row + j][0] = j*L/n_row;
+			pos[i*n_row + j][1] = i*L/n_row;
+			pos[i*n_row + j][2] = L/2.0;
+			vel[i*n_row + j][0]= (double)rand()/(double)(RAND_MAX/0.001);
+			vel[i*n_row + j][1]= (double)rand()/(double)(RAND_MAX/0.001);
+			vel[i*n_row + j][2]= (double)rand()/(double)(RAND_MAX/0.001);
+			printf("%d %d\n",i,j);
+		}
+	}
+	
 }
 
 void read_configuration(double (*pos)[3], double (*vel)[3]){
@@ -209,34 +228,35 @@ int main(void){
 	double position[N][3];
 	double velocity[N][3];
 	int i, j;
-	char start[] = "starting_configuration_2.dat";
-	char mid[] = "intermediate_configuration_2.dat";
-	char mid2[] = "intermediate_configuration2_2.dat";
-	char mid3[] = "intermediate_configuration3_2.dat";
-	char mid4[] = "intermediate_configuration4_2.dat";
-	char end[] = "final_configuration_2.dat";
-	char endv[] = "final_velocity_2.dat";
+	char start[] = "starting_configuration_flat.dat";
+	char mid[] = "intermediate_configuration_flat.dat";
+	char mid2[] = "intermediate_configuration2_flat.dat";
+	char mid3[] = "intermediate_configuration3_flat.dat";
+	char mid4[] = "intermediate_configuration4_flat.dat";
+	char end[] = "final_configuration_flat2.dat";
+	//char endv[] = "final_velocity_4.dat";
 	
 	/*initialize configuration*/
-	createConfiguration(position, velocity);
+	createFixedConfiguration(position, velocity);
 	printConfiguration(start, position);
 
 	//read_configuration(position, velocity);
 
 	/*calculate new positions and velocities*/
-	for(i=0; i<5000000; i++){
+	for(i=0; i<10000000; i++){
 		printf("%d \n",i);
 		calcNewVelocities(position, velocity);
 		calcNewPositions(position, velocity);
 		if(i==1000) printConfiguration(mid, position);
 		if(i==10000) printConfiguration(mid2, position);
-		if(i==500000) printConfiguration(mid3, position);
+		if(i==100000) printConfiguration(mid3, position);
 		if(i==1000000) printConfiguration(mid4, position);
 	}
 	
 	/*store final configuration*/
 	printConfiguration(end, position);
-	printVelocity(endv, velocity);	
+	//printVelocity(endv, velocity);	
+
 
     printf("DONE\n");
     return 0;
