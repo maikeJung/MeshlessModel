@@ -15,7 +15,7 @@ Test meshless membrane model
 #define Dt 0.001 // time step
 #define sigma 1.0 // excluded volume diameter
 
-#define L (10.0*sigma) // box size
+#define L (20.0*sigma) // box size
 #define L4 (L*L/4.0)
 #define N 100 // number of particles
 
@@ -54,9 +54,9 @@ void createConfiguration(double (*pos)[3], double (*vel)[3]){
         pos[i][0] = x;
 		pos[i][1] = y;
 		pos[i][2] = z;
-		vel[i][0]=0.01;
-		vel[i][1]=0.01;
-		vel[i][2]=0.01;
+		vel[i][0]=0.001;
+		vel[i][1]=0.001;
+		vel[i][2]=0.001;
 		printf("placed particle %d \n", i);
     }	
 }
@@ -84,12 +84,21 @@ void read_configuration(double (*pos)[3], double (*vel)[3]){
 	/*read in starting configuration*/
 	printf("yea\n");
     FILE *myFile;
-    myFile = fopen("final_configuration6.dat", "r");
+	/*read positions*/
+    myFile = fopen("P5_final_configuration.dat", "r");
 	int i;
     for (i = 0; i < N; i++) {
         fscanf(myFile, "%lf %lf %lf", &pos[i][0], &pos[i][1], &pos[i][2]);
     }
     fclose(myFile);
+
+	/*read velocities*/
+    myFile = fopen("P5_final_velocity.dat", "r");
+    for (i = 0; i < N; i++) {
+        fscanf(myFile, "%lf %lf %lf", &vel[i][0], &vel[i][1], &vel[i][2]);
+    }
+    fclose(myFile);
+	printf("yea2\n");
 }
 
 double f_cut(double dr){
@@ -217,7 +226,7 @@ void printVelocity(char *name, double (*vel)[3]){
 		x = vel[i][0];
 		y = vel[i][1];
 		z = vel[i][2];
-    	fprintf(f, "%f %f %f \n", x, y, z);
+    	fprintf(f, "%.20f %.20f %.20f \n", x, y, z);
 	}
     fclose(f);
 }
@@ -228,34 +237,36 @@ int main(void){
 	double position[N][3];
 	double velocity[N][3];
 	int i, j;
-	char start[] = "starting_configuration_flat.dat";
-	char mid[] = "intermediate_configuration_flat.dat";
-	char mid2[] = "intermediate_configuration2_flat.dat";
-	char mid3[] = "intermediate_configuration3_flat.dat";
-	char mid4[] = "intermediate_configuration4_flat.dat";
-	char end[] = "final_configuration_flat2.dat";
-	//char endv[] = "final_velocity_4.dat";
+	char start[] = "P_starting_configuration.dat";
+	char mid[] = "P_intermediate_configuration.dat";
+	//char mid2[] = "P5_intermediate_configuration2.dat";
+	//char mid3[] = "P5_intermediate_configuration3.dat";
+	//char mid4[] = "P5_intermediate_configuration4.dat";
+	char end[] = "P_final_configuration.dat";
+	char endv[] = "P_final_velocity.dat";
 	
-	/*initialize configuration*/
-	createFixedConfiguration(position, velocity);
+	/*initialize configuration - random or fixed position*/
+	createConfiguration(position, velocity);
+	//createFixedConfiguration(position, velocity);
 	printConfiguration(start, position);
 
+	/*load starting configuration*/
 	//read_configuration(position, velocity);
 
 	/*calculate new positions and velocities*/
-	for(i=0; i<10000000; i++){
+	for(i=0; i<1000000; i++){
 		printf("%d \n",i);
 		calcNewVelocities(position, velocity);
 		calcNewPositions(position, velocity);
-		if(i==1000) printConfiguration(mid, position);
-		if(i==10000) printConfiguration(mid2, position);
-		if(i==100000) printConfiguration(mid3, position);
-		if(i==1000000) printConfiguration(mid4, position);
+		if(i==100) printConfiguration(mid, position);
+		//if(i==80000) printConfiguration(mid2, position);
+		//if(i==90000) printConfiguration(mid3, position);
+		//if(i==30000) printConfiguration(mid4, position);
 	}
 	
 	/*store final configuration*/
 	printConfiguration(end, position);
-	//printVelocity(endv, velocity);	
+	printVelocity(endv, velocity);	
 
 
     printf("DONE\n");
