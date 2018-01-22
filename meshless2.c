@@ -1,6 +1,6 @@
 /* 
 *Author: Maike Jung
-*Date: 30.10.2017
+*Date: 22.01.2018
 
 Test meshless membrane model
 
@@ -62,7 +62,7 @@ void createConfiguration(double (*pos)[3], double (*vel)[3]){
 }
 
 void createFixedConfiguration(double (*pos)[3], double (*vel)[3]){
-	/*place particles on a plane - considering excluded volume*/
+	/*place particles on a plane*/
 	srand ( time(NULL) );
 	int i, j, k;
 	int n_row = int(sqrt(N));
@@ -234,9 +234,12 @@ void printVelocity(char *name, double (*vel)[3]){
 int main(void){
 	printf("START\n");
 
+	/*array for position and velocity*/
 	double position[N][3];
 	double velocity[N][3];
 	int i, j;
+
+	/*filenames*/
 	char start[] = "P_starting_configuration.dat";
 	char mid[] = "P_intermediate_configuration.dat";
 	//char mid2[] = "P5_intermediate_configuration2.dat";
