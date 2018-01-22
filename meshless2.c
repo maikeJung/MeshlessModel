@@ -226,7 +226,7 @@ void printVelocity(char *name, double (*vel)[3]){
 		x = vel[i][0];
 		y = vel[i][1];
 		z = vel[i][2];
-    	fprintf(f, "%.20f %.20f %.20f \n", x, y, z);
+    	fprintf(f, "%.40f %.40f %.40f \n", x, y, z);
 	}
     fclose(f);
 }
@@ -254,7 +254,7 @@ int main(void){
 	//read_configuration(position, velocity);
 
 	/*calculate new positions and velocities*/
-	for(i=0; i<1000000; i++){
+	for(i=0; i<100000; i++){
 		printf("%d \n",i);
 		calcNewVelocities(position, velocity);
 		calcNewPositions(position, velocity);
